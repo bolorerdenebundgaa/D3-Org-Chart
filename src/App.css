@@ -234,7 +234,6 @@ header p {
   position: absolute;
   left: -9999px;
   right: -9999px;
-  background: rgba(248, 249, 250, 0.95);
   border-top: 1px solid rgba(0, 0, 0, 0.1);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   display: flex;
@@ -271,7 +270,7 @@ header p {
 
 /* Link styles */
 .link {
-  stroke: #1E4289;
+  stroke: #000000;
   stroke-opacity: 0.5;
   transition: stroke-opacity 0.2s;
   pointer-events: none;

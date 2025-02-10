@@ -2,6 +2,28 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import PersonModal from './PersonModal';
 
+// Color configuration for easy updates
+const colors = {
+  // Node background colors - 5 level gradation from #A3C5CB
+  nodeColors: {
+    ceo: '#A3C5CB',      // Base color
+    tier1: '#B5D1D6',    // 15% lighter
+    tier2: '#C7DEE1',    // 30% lighter
+    tier3: '#D9EAEC',    // 45% lighter
+    tier4: '#EBF6F7'     // 60% lighter
+  },
+  // Button colors
+  button: {
+    background: '#ffffff',
+    text: '#666666'
+  },
+  // Text colors
+  text: {
+    primary: '#1E4289',
+    secondary: '#00A0B0'
+  }
+};
+
 const OrgChart = ({ data, employeeFilter, directorateFilter, zoom, viewMode }) => {
   const svgRef = useRef();
   const containerRef = useRef();
@@ -21,6 +43,15 @@ const OrgChart = ({ data, employeeFilter, directorateFilter, zoom, viewMode }) =
   ]));
   const [selectedPerson, setSelectedPerson] = useState(null);
   const [modalData, setModalData] = useState(null);
+
+  // Get node color based on level
+  const getNodeColor = (tier, level) => {
+    if (tier === 'chief' && level === 'senior') return colors.nodeColors.ceo;
+    if (tier === 'chief') return colors.nodeColors.tier1;
+    if (tier === 'director') return colors.nodeColors.tier2;
+    if (tier === 'manager') return colors.nodeColors.tier3;
+    return colors.nodeColors.tier4;
+  };
 
   const updateTransform = () => {
     if (!svgRef.current) return;
@@ -293,8 +324,8 @@ const OrgChart = ({ data, employeeFilter, directorateFilter, zoom, viewMode }) =
         tierGroup.append('text')
           .attr('x', -chartWidth / 2 - 150) // Position labels on the left side
           .attr('y', tier.y + tier.height / 2)
-          .attr('fill', '#1E4289')
-          .attr('font-size', '14px')
+          .attr('fill', colors.text.primary)
+          .attr('font-size', '12px') // Reduced font size
           .attr('font-weight', '500')
           .attr('opacity', 0.8)
           .attr('dominant-baseline', 'middle') // Vertically center text
@@ -330,7 +361,7 @@ const OrgChart = ({ data, employeeFilter, directorateFilter, zoom, viewMode }) =
       return level === 'junior' ? baseY + juniorOffset : baseY;
     }
 
-    // Draw links
+    // Draw links with black color
     const links = chartGroup.append('g')
       .attr('class', 'links')
       .selectAll('path')
@@ -372,7 +403,7 @@ const OrgChart = ({ data, employeeFilter, directorateFilter, zoom, viewMode }) =
                 L${targetX},${midY}
                 L${targetX},${targetY - nodeHeight/2}`;
       })
-      .style('stroke', '#1E4289')
+      .style('stroke', '#000000')
       .style('stroke-width', '1')
       .style('fill', 'none');
 
@@ -394,7 +425,7 @@ const OrgChart = ({ data, employeeFilter, directorateFilter, zoom, viewMode }) =
       .attr('rx', 2)
       .style('fill', '#00000012');
 
-    // Add node rectangles with click handler
+    // Add node rectangles with click handler and gradient colors
     nodes.append('rect')
       .attr('class', d => {
         const isHighlighted = 
@@ -407,41 +438,59 @@ const OrgChart = ({ data, employeeFilter, directorateFilter, zoom, viewMode }) =
       .attr('x', -nodeWidth/2)
       .attr('y', -nodeHeight/2)
       .attr('rx', 2)
-      .style('fill', '#FFFFFF')
+      .style('fill', d => getNodeColor(d.data.tier, d.data.level))
       .style('stroke', '#99999935')
       .style('stroke-width', '1')
       .style('cursor', 'pointer')
       .on('click', handleNodeClick);
 
-    // Add node text
+    // Add avatar images
+    nodes.append('image')
+      .attr('x', -nodeWidth/2 + 10) // 10px padding from left
+      .attr('y', -nodeHeight/2 + 10) // 10px padding from top
+      .attr('width', 40)
+      .attr('height', 40)
+      .attr('href', d => d.data.avatar);
+
+    // Add node text with left alignment
     nodes.append('text')
-      .attr('y', -15)
-      .attr('text-anchor', 'middle')
+      .attr('x', -nodeWidth/2 + 60) // Position after avatar with padding
+      .attr('y', -nodeHeight/2 + 20) // Align with avatar
       .attr('class', 'node-name')
-      .style('fill', '#1E4289')
+      .style('fill', colors.text.primary)
       .style('font-weight', 'bold')
       .style('pointer-events', 'none')
+      .style('text-anchor', 'start')
+      .style('font-size', '12px') // Reduced font size
       .text(d => d.data.name);
 
     nodes.append('text')
-      .attr('y', 5)
-      .attr('text-anchor', 'middle')
+      .attr('x', -nodeWidth/2 + 60)
+      .attr('y', -nodeHeight/2 + 40)
       .attr('class', 'node-title')
-      .style('fill', '#1E4289')
+      .style('fill', colors.text.primary)
       .style('pointer-events', 'none')
+      .style('text-anchor', 'start')
+      .style('font-size', '11px') // Reduced font size
       .text(d => d.data.title);
 
     nodes.append('text')
-      .attr('y', 20)
-      .attr('text-anchor', 'middle')
+      .attr('x', -nodeWidth/2 + 60)
+      .attr('y', -nodeHeight/2 + 60)
       .attr('class', 'node-department')
-      .style('fill', '#00A0B0')
+      .style('fill', colors.text.secondary)
       .style('pointer-events', 'none')
+      .style('text-anchor', 'start')
+      .style('font-size', '11px') // Reduced font size
       .text(d => d.data.department);
 
-    // Add expand/collapse buttons
+    // Add expand/collapse buttons only to nodes with children
     nodes.each(function(d) {
-      if (d.data._children || d.data.children) {
+      // Only add button if node has children (either expanded or collapsed)
+      const hasChildren = (d.data.children && d.data.children.length > 0) || 
+                         (d.data._children && d.data._children.length > 0);
+      
+      if (hasChildren) {
         const g = d3.select(this);
         const isExpanded = expandedNodes.has(d.data.id);
         const buttonWidth = 30;
@@ -470,7 +519,7 @@ const OrgChart = ({ data, employeeFilter, directorateFilter, zoom, viewMode }) =
           .attr('width', buttonWidth)
           .attr('height', buttonHeight)
           .attr('rx', buttonHeight/2)
-          .style('fill', '#ffffff')
+          .style('fill', colors.button.background)
           .style('stroke', '#99999990')
           .style('stroke-width', '0.5')
           .on('click', (event) => toggleNode(d.data.id, event));
@@ -485,7 +534,7 @@ const OrgChart = ({ data, employeeFilter, directorateFilter, zoom, viewMode }) =
           .attr('y', buttonHeight/2)
           .attr('text-anchor', 'middle')
           .attr('dominant-baseline', 'middle')
-          .style('fill', '#666')
+          .style('fill', colors.button.text)
           .style('font-size', '11px')
           .style('font-weight', '800')
           .style('user-select', 'none')

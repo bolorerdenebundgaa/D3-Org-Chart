@@ -39,9 +39,23 @@ const PersonModal = ({ person, managers, reports, onClose, onPersonClick }) => {
       className={`person-card ${isMain ? 'main' : ''}`}
       onClick={onClick}
     >
-      <h4>{person.name}</h4>
-      <p className="title">{person.title}</p>
-      <p className="department">{person.department}</p>
+      <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '15px' }}>
+        <img 
+          src={person.avatar} 
+          alt={person.name} 
+          style={{ 
+            width: '60px', 
+            height: '60px', 
+            marginRight: '15px',
+            borderRadius: '4px'
+          }} 
+        />
+        <div>
+          <h4>{person.name}</h4>
+          <p className="title">{person.title}</p>
+          <p className="department">{person.department}</p>
+        </div>
+      </div>
       {isMain && (
         <>
           <div className="person-details">

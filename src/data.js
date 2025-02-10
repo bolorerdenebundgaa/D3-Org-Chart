@@ -12,6 +12,7 @@ export const orgData = {
   location: "HQ - Floor 10",
   email: "ethan.miller@company.com",
   hireDate: "2015-01-15",
+  avatar: "/src/avatar.png",
   children: [
     {
       id: '2',
@@ -27,6 +28,7 @@ export const orgData = {
       location: "Tech Wing - Floor 9",
       email: "barry.gause@company.com",
       hireDate: "2016-03-20",
+      avatar: "/src/avatar.png",
       children: [
         {
           id: '20',
@@ -42,6 +44,7 @@ export const orgData = {
           location: "Tech Wing - Floor 9",
           email: "david.kumar@company.com",
           hireDate: "2017-06-12",
+          avatar: "/src/avatar.png",
           children: []
         },
         {
@@ -58,6 +61,7 @@ export const orgData = {
           location: "Tech Wing - Floor 8",
           email: "kelly.zhang@company.com",
           hireDate: "2017-02-15",
+          avatar: "/src/avatar.png",
           children: [
             {
               id: '210',
@@ -73,6 +77,7 @@ export const orgData = {
               location: "Tech Wing - Floor 8",
               email: "peter.chen@company.com",
               hireDate: "2018-04-10",
+              avatar: "/src/avatar.png",
               children: []
             },
             {
@@ -89,6 +94,7 @@ export const orgData = {
               location: "Tech Wing - Floor 8",
               email: "tom.wilson@company.com",
               hireDate: "2019-01-20",
+              avatar: "/src/avatar.png",
               children: []
             },
             {
@@ -105,6 +111,7 @@ export const orgData = {
               location: "Tech Wing - Floor 8",
               email: "sarah.chen@company.com",
               hireDate: "2021-07-15",
+              avatar: "/src/avatar.png",
               children: []
             }
           ]
@@ -125,6 +132,7 @@ export const orgData = {
       location: "HQ - Floor 9",
       email: "len.martinez@company.com",
       hireDate: "2016-05-01",
+      avatar: "/src/avatar.png",
       children: [
         {
           id: '30',
@@ -140,6 +148,7 @@ export const orgData = {
           location: "HQ - Floor 9",
           email: "maria.rodriguez@company.com",
           hireDate: "2017-09-15",
+          avatar: "/src/avatar.png",
           children: [
             {
               id: '301',
@@ -155,6 +164,7 @@ export const orgData = {
               location: "HQ - Floor 8",
               email: "chris.taylor@company.com",
               hireDate: "2020-03-10",
+              avatar: "/src/avatar.png",
               children: []
             }
           ]
@@ -173,6 +183,7 @@ export const orgData = {
           location: "HQ - Floor 8",
           email: "carrie.johnson@company.com",
           hireDate: "2017-11-20",
+          avatar: "/src/avatar.png",
           children: [
             {
               id: '310',
@@ -188,6 +199,7 @@ export const orgData = {
               location: "HQ - Floor 8",
               email: "james.wilson@company.com",
               hireDate: "2018-08-15",
+              avatar: "/src/avatar.png",
               children: []
             },
             {
@@ -204,6 +216,7 @@ export const orgData = {
               location: "HQ - Floor 8",
               email: "mike.ross@company.com",
               hireDate: "2018-06-01",
+              avatar: "/src/avatar.png",
               children: [
                 {
                   id: '3111',
@@ -219,6 +232,7 @@ export const orgData = {
                   location: "HQ - Floor 7",
                   email: "alex.lee@company.com",
                   hireDate: "2019-04-15",
+                  avatar: "/src/avatar.png",
                   children: []
                 },
                 {
@@ -235,6 +249,7 @@ export const orgData = {
                   location: "HQ - Floor 7",
                   email: "lisa.park@company.com",
                   hireDate: "2021-09-01",
+                  avatar: "/src/avatar.png",
                   children: []
                 }
               ]
@@ -257,6 +272,7 @@ export const orgData = {
       location: "HQ - Floor 9",
       email: "shannon.lee@company.com",
       hireDate: "2016-08-15",
+      avatar: "/src/avatar.png",
       children: [
         {
           id: '40',
@@ -272,6 +288,7 @@ export const orgData = {
           location: "HQ - Floor 9",
           email: "robert.chen@company.com",
           hireDate: "2017-12-01",
+          avatar: "/src/avatar.png",
           children: [
             {
               id: '401',
@@ -287,6 +304,7 @@ export const orgData = {
               location: "HQ - Floor 8",
               email: "emily.wang@company.com",
               hireDate: "2020-06-15",
+              avatar: "/src/avatar.png",
               children: []
             }
           ]
@@ -305,6 +323,7 @@ export const orgData = {
           location: "HQ - Floor 8",
           email: "terri.wilson@company.com",
           hireDate: "2018-01-20",
+          avatar: "/src/avatar.png",
           children: [
             {
               id: '410',
@@ -320,6 +339,7 @@ export const orgData = {
               location: "HQ - Floor 8",
               email: "amy.zhang@company.com",
               hireDate: "2019-03-15",
+              avatar: "/src/avatar.png",
               children: []
             },
             {
@@ -336,6 +356,7 @@ export const orgData = {
               location: "HQ - Floor 8",
               email: "xi.wang@company.com",
               hireDate: "2018-09-01",
+              avatar: "/src/avatar.png",
               children: [
                 {
                   id: '4111',
@@ -351,6 +372,7 @@ export const orgData = {
                   location: "HQ - Floor 7",
                   email: "john.smith@company.com",
                   hireDate: "2019-07-15",
+                  avatar: "/src/avatar.png",
                   children: []
                 },
                 {
@@ -367,6 +389,7 @@ export const orgData = {
                   location: "HQ - Floor 7",
                   email: "emma.davis@company.com",
                   hireDate: "2021-11-01",
+                  avatar: "/src/avatar.png",
                   children: []
                 }
               ]
