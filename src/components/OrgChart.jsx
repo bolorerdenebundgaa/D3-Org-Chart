@@ -2,8 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import PersonModal from './PersonModal';
 
-const OrgChart = ({ data, employeeFilter, directorateFilter, zoom }) => {
+const OrgChart = ({ data, employeeFilter, directorateFilter, zoom, viewMode }) => {
   const svgRef = useRef();
+  const containerRef = useRef();
   const dragRef = useRef({
     isDragging: false,
     startX: 0,
@@ -16,18 +17,23 @@ const OrgChart = ({ data, employeeFilter, directorateFilter, zoom }) => {
   const [popup, setPopup] = useState(null);
   const [expandedNodes, setExpandedNodes] = useState(new Set([
     '1',  // CEO
-    '2', '3', '4',  // C-level
-    '20', '21', '30', '31', '40', '41',  // Directors and Deputies
-    '210', '211', '212',  // Engineering team
-    '301',  // Operations specialist
-    '310', '311',  // Operations team
-    '3111', '3112',  // Operations analysts
-    '401',  // Finance analyst
-    '410', '411',  // Finance team
-    '4111', '4112'  // Finance accountants
+    '2', '3', '4',  // C-level (direct reports of CEO)
   ]));
   const [selectedPerson, setSelectedPerson] = useState(null);
   const [modalData, setModalData] = useState(null);
+
+  const updateTransform = () => {
+    if (!svgRef.current) return;
+    const svg = d3.select(svgRef.current);
+    const currentTransform = dragRef.current;
+    svg.selectAll('g.movable-group')
+      .attr('transform', `translate(${currentTransform.translateX}, ${currentTransform.translateY}) scale(${zoom || 1})`);
+  };
+
+  // Update transform when zoom changes
+  useEffect(() => {
+    updateTransform();
+  }, [zoom]);
 
   const handleMouseDown = (event) => {
     if (event.button !== 0) return; // Only handle left mouse button
@@ -49,11 +55,10 @@ const OrgChart = ({ data, employeeFilter, directorateFilter, zoom }) => {
     dragState.translateX = newTranslateX;
     dragState.translateY = newTranslateY;
 
-    // Update chart position directly without state update
-    const g = d3.select(svgRef.current).select('g');
-    const scale = zoom || 1;
-    const containerWidth = svgRef.current.parentElement.clientWidth;
-    g.attr('transform', `translate(${containerWidth/2 + newTranslateX}, ${60 + newTranslateY}) scale(${scale})`);
+    // Update both chart and background groups
+    const svg = d3.select(svgRef.current);
+    svg.selectAll('g.movable-group')
+      .attr('transform', `translate(${dragState.translateX}, ${dragState.translateY}) scale(${zoom || 1})`);
   };
 
   const handleMouseUp = (event) => {
@@ -136,15 +141,30 @@ const OrgChart = ({ data, employeeFilter, directorateFilter, zoom }) => {
     setModalData({
       person,
       managers,
-      reports
+      reports,
+      onPersonClick: (newPerson) => {
+        // When clicking a person in the modal, find their managers and reports
+        const newManagers = findDirectManagers(newPerson, data);
+        const newReports = findDirectReports(newPerson);
+        return { managers: newManagers, reports: newReports };
+      }
     });
   };
 
   useEffect(() => {
-    if (!svgRef.current || !data) return;
+    console.log('OrgChart useEffect running');
+    console.log('Data:', data);
+    console.log('SVG ref:', svgRef.current);
+
+    if (!svgRef.current || !data) {
+      console.log('Missing required refs or data');
+      return;
+    }
 
     const containerWidth = svgRef.current.parentElement.clientWidth;
     const containerHeight = svgRef.current.parentElement.clientHeight;
+    console.log('Container dimensions:', { width: containerWidth, height: containerHeight });
+
     const nodeWidth = 180;
     const nodeHeight = 80;
     const levelHeight = 150;
@@ -155,14 +175,20 @@ const OrgChart = ({ data, employeeFilter, directorateFilter, zoom }) => {
     const svg = d3.select(svgRef.current)
       .attr('width', '100%')
       .attr('height', '100%')
-      .attr('viewBox', `-${containerWidth/2} 0 ${containerWidth} ${containerHeight}`)
-      .attr('preserveAspectRatio', 'xMidYMid meet')
       .style('background-color', '#ffffff')
       .html('');
 
-    // Create main group with initial transform
-    const g = svg.append('g')
-      .attr('transform', `translate(0, 60) scale(${zoom || 1})`);
+    // Create a defs section for clip paths
+    const defs = svg.append('defs');
+
+    // Add a clip path to contain the tier backgrounds
+    defs.append('clipPath')
+      .attr('id', 'chart-area')
+      .append('rect')
+      .attr('x', -500000)
+      .attr('y', 0)
+      .attr('width', 1000000)
+      .attr('height', 1000);
 
     // Process data for visualization
     const processData = (node) => {
@@ -180,11 +206,14 @@ const OrgChart = ({ data, employeeFilter, directorateFilter, zoom }) => {
     };
 
     const processedData = processData(data);
-    const root = d3.hierarchy(processedData);
+    console.log('Processed data:', processedData);
 
-    // Calculate the tree layout with reduced node spacing
+    const root = d3.hierarchy(processedData);
+    console.log('Hierarchy root:', root);
+
+    // Calculate the tree layout with fixed dimensions
     const treeLayout = d3.tree()
-      .nodeSize([nodeWidth, levelHeight])
+      .nodeSize([nodeWidth * 1.5, levelHeight])
       .separation((a, b) => {
         const hasJunior = a.children?.some(c => c.data.level === 'junior') || 
                          b.children?.some(c => c.data.level === 'junior');
@@ -192,43 +221,94 @@ const OrgChart = ({ data, employeeFilter, directorateFilter, zoom }) => {
       });
 
     treeLayout(root);
+    console.log('Tree layout applied:', root);
 
-    // Calculate tier heights recursively
-    const getTierHeights = () => {
-      const tierHeights = {
-        chief: { min: 180 + ceoGap, max: 180 + ceoGap },
-        director: { min: 330 + ceoGap, max: 330 + ceoGap },
-        manager: { min: 480 + ceoGap, max: 480 + ceoGap },
-        staff: { min: 630 + ceoGap, max: 630 + ceoGap }
-      };
-
-      const processNode = (node, depth = 0) => {
-        const tier = node.data.tier;
-        const level = node.data.level;
-        const y = level === 'junior' ? tierHeights[tier].min + juniorOffset : tierHeights[tier].min;
-        
-        tierHeights[tier].max = Math.max(tierHeights[tier].max, y);
-
-        if (node.children) {
-          node.children.forEach(child => processNode(child, depth + 1));
-          
-          const hasJuniorChildren = node.children.some(c => c.data.level === 'junior');
-          if (hasJuniorChildren) {
-            tierHeights[tier].max = Math.max(tierHeights[tier].max, y + juniorOffset);
-          }
-        }
-      };
-
-      root.descendants().forEach(node => processNode(node));
-      return tierHeights;
-    };
-
-    const tierHeights = getTierHeights();
+    // Calculate chart bounds
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
 
     // Scale node positions
     root.descendants().forEach(d => {
-      d.x = d.x;
-      d.y = getTierY(d.data.tier, d.data.level, d.data.id, d.parent);
+      if (viewMode === 'vertical') {
+        // Swap x and y coordinates for vertical layout
+        const temp = d.x;
+        d.x = d.y;
+        d.y = temp;
+      } else {
+        d.y = getTierY(d.data.tier, d.data.level, d.data.id, d.parent);
+      }
+
+      minX = Math.min(minX, d.x);
+      maxX = Math.max(maxX, d.x);
+      minY = Math.min(minY, d.y);
+      maxY = Math.max(maxY, d.y);
+    });
+
+    console.log('Chart bounds:', { minX, maxX, minY, maxY });
+
+    // Calculate chart dimensions
+    const chartWidth = maxX - minX + nodeWidth * 2;
+    const chartHeight = maxY - minY + nodeHeight * 2;
+
+    // Create main group with initial transform
+    const initialTranslateX = containerWidth / 2;
+    const initialTranslateY = 100;
+
+    // Create main container group
+    const mainGroup = svg.append('g')
+      .attr('class', 'movable-group')
+      .attr('transform', `translate(${initialTranslateX}, ${initialTranslateY}) scale(${zoom || 1})`);
+
+    // Draw tier backgrounds first
+    if (viewMode === 'horizontal') {
+      const tiers = [
+        { name: 'Chief tier', y: 140 + ceoGap, height: 150 },
+        { name: 'Director tier', y: 290 + ceoGap, height: 150 },
+        { name: 'Manager/Independent tier', y: 440 + ceoGap, height: 150 },
+        { name: 'Staff tier', y: 590 + ceoGap, height: 150 }
+      ];
+
+      // Create background group
+      const backgroundGroup = mainGroup.append('g')
+        .attr('class', 'tier-backgrounds');
+
+      tiers.forEach((tier, index) => {
+        // Background rectangle
+        const tierGroup = backgroundGroup.append('g')
+          .attr('clip-path', 'url(#chart-area)');
+
+        // Add background rectangle
+        tierGroup.append('rect')
+          .attr('x', -500000)
+          .attr('y', tier.y)
+          .attr('width', 1000000)
+          .attr('height', tier.height)
+          .attr('fill', index % 2 === 0 ? 'rgba(248, 249, 250, 0.95)' : 'rgba(240, 241, 242, 0.95)')
+          .attr('stroke', 'rgba(0, 0, 0, 0.1)')
+          .attr('stroke-width', 1);
+
+        // Add tier label
+        tierGroup.append('text')
+          .attr('x', -chartWidth / 2 - 150) // Position labels on the left side
+          .attr('y', tier.y + tier.height / 2)
+          .attr('fill', '#1E4289')
+          .attr('font-size', '14px')
+          .attr('font-weight', '500')
+          .attr('opacity', 0.8)
+          .attr('dominant-baseline', 'middle') // Vertically center text
+          .text(tier.name);
+      });
+    }
+    
+    // Create chart group for nodes and links
+    const chartGroup = mainGroup.append('g')
+      .attr('class', 'chart-group');
+
+    // Center the root node
+    root.descendants().forEach(d => {
+      d.x -= (maxX + minX) / 2;
     });
 
     function getTierY(tier, level, id, parent) {
@@ -240,48 +320,18 @@ const OrgChart = ({ data, employeeFilter, directorateFilter, zoom }) => {
       
       let baseY;
       switch(tier) {
-        case 'chief': baseY = tierHeights.chief.min; break;
-        case 'director': baseY = tierHeights.director.min; break;
-        case 'manager': baseY = tierHeights.manager.min; break;
-        case 'staff': baseY = tierHeights.staff.min; break;
-        default: baseY = tierHeights.chief.min;
+        case 'chief': baseY = 180 + ceoGap; break;
+        case 'director': baseY = 330 + ceoGap; break;
+        case 'manager': baseY = 480 + ceoGap; break;
+        case 'staff': baseY = 630 + ceoGap; break;
+        default: baseY = 180 + ceoGap;
       }
       
       return level === 'junior' ? baseY + juniorOffset : baseY;
     }
 
-    // Draw tier backgrounds
-    const tiers = [
-      { name: 'Chief tier', y: 140 + ceoGap, height: Math.max(levelHeight * 1.5, tierHeights.chief.max - tierHeights.chief.min + levelHeight), color: '#F5F5F5' },
-      { name: 'Director tier', y: 290 + ceoGap, height: Math.max(levelHeight * 1.5, tierHeights.director.max - tierHeights.director.min + levelHeight), color: '#F8F8F8' },
-      { name: 'Manager/Independent tier', y: 440 + ceoGap, height: Math.max(levelHeight * 1.5, tierHeights.manager.max - tierHeights.manager.min + levelHeight), color: '#FAFAFA' },
-      { name: 'Staff tier', y: 590 + ceoGap, height: Math.max(levelHeight * 1.5, tierHeights.staff.max - tierHeights.staff.min + levelHeight), color: '#FCFCFC' }
-    ];
-
-    // Add tier backgrounds
-    tiers.forEach(tier => {
-      const tierGroup = g.append('g')
-        .attr('class', 'tier-group');
-
-      tierGroup.append('rect')
-        .attr('x', -containerWidth)
-        .attr('y', tier.y)
-        .attr('width', containerWidth * 2)
-        .attr('height', tier.height)
-        .attr('fill', tier.color)
-        .attr('class', 'tier-background')
-        .style('stroke', '#ccc')
-        .style('stroke-width', '1');
-
-      tierGroup.append('text')
-        .attr('x', -containerWidth + 40)
-        .attr('y', tier.y + 30)
-        .attr('class', 'tier-label')
-        .text(tier.name);
-    });
-
     // Draw links
-    const links = g.append('g')
+    const links = chartGroup.append('g')
       .attr('class', 'links')
       .selectAll('path')
       .data(root.links())
@@ -292,6 +342,13 @@ const OrgChart = ({ data, employeeFilter, directorateFilter, zoom }) => {
         const sourceY = d.source.y;
         const targetX = d.target.x;
         const targetY = d.target.y;
+
+        if (viewMode === 'vertical') {
+          return d3.linkVertical()({
+            source: [sourceX, sourceY],
+            target: [targetX, targetY]
+          });
+        }
 
         if (d.target.data.level === 'junior') {
           const curve = d3.line().curve(d3.curveBasis);
@@ -315,12 +372,12 @@ const OrgChart = ({ data, employeeFilter, directorateFilter, zoom }) => {
                 L${targetX},${midY}
                 L${targetX},${targetY - nodeHeight/2}`;
       })
-      .style('stroke', '#000')
+      .style('stroke', '#1E4289')
       .style('stroke-width', '1')
       .style('fill', 'none');
 
     // Create node groups
-    const nodes = g.append('g')
+    const nodes = chartGroup.append('g')
       .attr('class', 'nodes')
       .selectAll('g')
       .data(root.descendants())
@@ -350,7 +407,7 @@ const OrgChart = ({ data, employeeFilter, directorateFilter, zoom }) => {
       .attr('x', -nodeWidth/2)
       .attr('y', -nodeHeight/2)
       .attr('rx', 2)
-      .style('fill', d => d.data.level === 'junior' ? '#fff8e1' : '#fff8d6')
+      .style('fill', '#FFFFFF')
       .style('stroke', '#99999935')
       .style('stroke-width', '1')
       .style('cursor', 'pointer')
@@ -361,7 +418,7 @@ const OrgChart = ({ data, employeeFilter, directorateFilter, zoom }) => {
       .attr('y', -15)
       .attr('text-anchor', 'middle')
       .attr('class', 'node-name')
-      .style('fill', '#000')
+      .style('fill', '#1E4289')
       .style('font-weight', 'bold')
       .style('pointer-events', 'none')
       .text(d => d.data.name);
@@ -370,7 +427,7 @@ const OrgChart = ({ data, employeeFilter, directorateFilter, zoom }) => {
       .attr('y', 5)
       .attr('text-anchor', 'middle')
       .attr('class', 'node-title')
-      .style('fill', '#000')
+      .style('fill', '#1E4289')
       .style('pointer-events', 'none')
       .text(d => d.data.title);
 
@@ -378,7 +435,7 @@ const OrgChart = ({ data, employeeFilter, directorateFilter, zoom }) => {
       .attr('y', 20)
       .attr('text-anchor', 'middle')
       .attr('class', 'node-department')
-      .style('fill', '#000')
+      .style('fill', '#00A0B0')
       .style('pointer-events', 'none')
       .text(d => d.data.department);
 
@@ -387,9 +444,9 @@ const OrgChart = ({ data, employeeFilter, directorateFilter, zoom }) => {
       if (d.data._children || d.data.children) {
         const g = d3.select(this);
         const isExpanded = expandedNodes.has(d.data.id);
-        const buttonWidth = 14;
-        const buttonHeight = 4;
-        const buttonOffset = 5;
+        const buttonWidth = 30;
+        const buttonHeight = 16;
+        const buttonOffset = -8;
         
         const buttonGroup = g.append('g')
           .attr('class', 'expand-collapse-group')
@@ -429,22 +486,20 @@ const OrgChart = ({ data, employeeFilter, directorateFilter, zoom }) => {
           .attr('text-anchor', 'middle')
           .attr('dominant-baseline', 'middle')
           .style('fill', '#666')
-          .style('font-size', '5px')
-          .style('font-weight', '500')
+          .style('font-size', '11px')
+          .style('font-weight', '800')
           .style('user-select', 'none')
           .text(buttonText)
           .on('click', (event) => toggleNode(d.data.id, event));
       }
     });
 
-    // Apply zoom scale and translation
-    const dragState = dragRef.current;
-    g.attr('transform', `translate(${dragState.translateX}, ${60 + dragState.translateY}) scale(${zoom || 1})`);
+    console.log('Chart rendering complete');
 
-  }, [data, employeeFilter, directorateFilter, zoom, expandedNodes]);
+  }, [data, employeeFilter, directorateFilter, zoom, expandedNodes, viewMode]);
 
   return (
-    <div className="chart-container"
+    <div className="chart-container" ref={containerRef}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -465,6 +520,7 @@ const OrgChart = ({ data, employeeFilter, directorateFilter, zoom }) => {
           managers={modalData.managers}
           reports={modalData.reports}
           onClose={() => setModalData(null)}
+          onPersonClick={modalData.onPersonClick}
         />
       )}
     </div>

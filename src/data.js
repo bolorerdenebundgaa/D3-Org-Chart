@@ -5,6 +5,13 @@ export const orgData = {
   department: "Executive",
   tier: "chief",
   level: "senior",
+  phone: "(555) 123-4567",
+  teamsId: "ethan.miller@company.com",
+  directorate: "Executive Office",
+  supervisor: "",
+  location: "HQ - Floor 10",
+  email: "ethan.miller@company.com",
+  hireDate: "2015-01-15",
   children: [
     {
       id: '2',
@@ -13,6 +20,13 @@ export const orgData = {
       department: "Technology",
       tier: "chief",
       level: "senior",
+      phone: "(555) 123-4568",
+      teamsId: "barry.gause@company.com",
+      directorate: "Technology",
+      supervisor: "Ethan Miller",
+      location: "Tech Wing - Floor 9",
+      email: "barry.gause@company.com",
+      hireDate: "2016-03-20",
       children: [
         {
           id: '20',
@@ -21,6 +35,13 @@ export const orgData = {
           department: "Technology",
           tier: "chief",
           level: "junior",
+          phone: "(555) 123-4569",
+          teamsId: "david.kumar@company.com",
+          directorate: "Technology",
+          supervisor: "Barry Gause",
+          location: "Tech Wing - Floor 9",
+          email: "david.kumar@company.com",
+          hireDate: "2017-06-12",
           children: []
         },
         {
@@ -30,6 +51,13 @@ export const orgData = {
           department: "Engineering",
           tier: "director",
           level: "senior",
+          phone: "(555) 123-4570",
+          teamsId: "kelly.zhang@company.com",
+          directorate: "Engineering",
+          supervisor: "Barry Gause",
+          location: "Tech Wing - Floor 8",
+          email: "kelly.zhang@company.com",
+          hireDate: "2017-02-15",
           children: [
             {
               id: '210',
@@ -38,6 +66,13 @@ export const orgData = {
               department: "Engineering",
               tier: "director",
               level: "junior",
+              phone: "(555) 123-4571",
+              teamsId: "peter.chen@company.com",
+              directorate: "Engineering",
+              supervisor: "Kelly Zhang",
+              location: "Tech Wing - Floor 8",
+              email: "peter.chen@company.com",
+              hireDate: "2018-04-10",
               children: []
             },
             {
@@ -47,6 +82,13 @@ export const orgData = {
               department: "Engineering",
               tier: "staff",
               level: "senior",
+              phone: "(555) 123-4572",
+              teamsId: "tom.wilson@company.com",
+              directorate: "Engineering",
+              supervisor: "Kelly Zhang",
+              location: "Tech Wing - Floor 8",
+              email: "tom.wilson@company.com",
+              hireDate: "2019-01-20",
               children: []
             },
             {
@@ -56,6 +98,13 @@ export const orgData = {
               department: "Engineering",
               tier: "staff",
               level: "junior",
+              phone: "(555) 123-4573",
+              teamsId: "sarah.chen@company.com",
+              directorate: "Engineering",
+              supervisor: "Kelly Zhang",
+              location: "Tech Wing - Floor 8",
+              email: "sarah.chen@company.com",
+              hireDate: "2021-07-15",
               children: []
             }
           ]
@@ -69,6 +118,13 @@ export const orgData = {
       department: "Operations",
       tier: "chief",
       level: "senior",
+      phone: "(555) 123-4574",
+      teamsId: "len.martinez@company.com",
+      directorate: "Operations",
+      supervisor: "Ethan Miller",
+      location: "HQ - Floor 9",
+      email: "len.martinez@company.com",
+      hireDate: "2016-05-01",
       children: [
         {
           id: '30',
@@ -77,6 +133,13 @@ export const orgData = {
           department: "Operations",
           tier: "chief",
           level: "junior",
+          phone: "(555) 123-4575",
+          teamsId: "maria.rodriguez@company.com",
+          directorate: "Operations",
+          supervisor: "Len Martinez",
+          location: "HQ - Floor 9",
+          email: "maria.rodriguez@company.com",
+          hireDate: "2017-09-15",
           children: [
             {
               id: '301',
@@ -85,6 +148,13 @@ export const orgData = {
               department: "Operations",
               tier: "staff",
               level: "junior",
+              phone: "(555) 123-4576",
+              teamsId: "chris.taylor@company.com",
+              directorate: "Operations",
+              supervisor: "Maria Rodriguez",
+              location: "HQ - Floor 8",
+              email: "chris.taylor@company.com",
+              hireDate: "2020-03-10",
               children: []
             }
           ]
@@ -96,6 +166,13 @@ export const orgData = {
           department: "Operations",
           tier: "director",
           level: "senior",
+          phone: "(555) 123-4577",
+          teamsId: "carrie.johnson@company.com",
+          directorate: "Operations",
+          supervisor: "Len Martinez",
+          location: "HQ - Floor 8",
+          email: "carrie.johnson@company.com",
+          hireDate: "2017-11-20",
           children: [
             {
               id: '310',
@@ -104,6 +181,13 @@ export const orgData = {
               department: "Operations",
               tier: "director",
               level: "junior",
+              phone: "(555) 123-4578",
+              teamsId: "james.wilson@company.com",
+              directorate: "Operations",
+              supervisor: "Carrie Johnson",
+              location: "HQ - Floor 8",
+              email: "james.wilson@company.com",
+              hireDate: "2018-08-15",
               children: []
             },
             {
@@ -113,6 +197,13 @@ export const orgData = {
               department: "Operations",
               tier: "manager",
               level: "senior",
+              phone: "(555) 123-4579",
+              teamsId: "mike.ross@company.com",
+              directorate: "Operations",
+              supervisor: "Carrie Johnson",
+              location: "HQ - Floor 8",
+              email: "mike.ross@company.com",
+              hireDate: "2018-06-01",
               children: [
                 {
                   id: '3111',
@@ -121,6 +212,13 @@ export const orgData = {
                   department: "Operations",
                   tier: "staff",
                   level: "senior",
+                  phone: "(555) 123-4580",
+                  teamsId: "alex.lee@company.com",
+                  directorate: "Operations",
+                  supervisor: "Mike Ross",
+                  location: "HQ - Floor 7",
+                  email: "alex.lee@company.com",
+                  hireDate: "2019-04-15",
                   children: []
                 },
                 {
@@ -130,6 +228,13 @@ export const orgData = {
                   department: "Operations",
                   tier: "staff",
                   level: "junior",
+                  phone: "(555) 123-4581",
+                  teamsId: "lisa.park@company.com",
+                  directorate: "Operations",
+                  supervisor: "Mike Ross",
+                  location: "HQ - Floor 7",
+                  email: "lisa.park@company.com",
+                  hireDate: "2021-09-01",
                   children: []
                 }
               ]
@@ -145,6 +250,13 @@ export const orgData = {
       department: "Finance",
       tier: "chief",
       level: "senior",
+      phone: "(555) 123-4582",
+      teamsId: "shannon.lee@company.com",
+      directorate: "Finance",
+      supervisor: "Ethan Miller",
+      location: "HQ - Floor 9",
+      email: "shannon.lee@company.com",
+      hireDate: "2016-08-15",
       children: [
         {
           id: '40',
@@ -153,6 +265,13 @@ export const orgData = {
           department: "Finance",
           tier: "chief",
           level: "junior",
+          phone: "(555) 123-4583",
+          teamsId: "robert.chen@company.com",
+          directorate: "Finance",
+          supervisor: "Shannon Lee",
+          location: "HQ - Floor 9",
+          email: "robert.chen@company.com",
+          hireDate: "2017-12-01",
           children: [
             {
               id: '401',
@@ -161,6 +280,13 @@ export const orgData = {
               department: "Finance",
               tier: "staff",
               level: "junior",
+              phone: "(555) 123-4584",
+              teamsId: "emily.wang@company.com",
+              directorate: "Finance",
+              supervisor: "Robert Chen",
+              location: "HQ - Floor 8",
+              email: "emily.wang@company.com",
+              hireDate: "2020-06-15",
               children: []
             }
           ]
@@ -172,6 +298,13 @@ export const orgData = {
           department: "Finance",
           tier: "director",
           level: "senior",
+          phone: "(555) 123-4585",
+          teamsId: "terri.wilson@company.com",
+          directorate: "Finance",
+          supervisor: "Shannon Lee",
+          location: "HQ - Floor 8",
+          email: "terri.wilson@company.com",
+          hireDate: "2018-01-20",
           children: [
             {
               id: '410',
@@ -180,6 +313,13 @@ export const orgData = {
               department: "Finance",
               tier: "director",
               level: "junior",
+              phone: "(555) 123-4586",
+              teamsId: "amy.zhang@company.com",
+              directorate: "Finance",
+              supervisor: "Terri Wilson",
+              location: "HQ - Floor 8",
+              email: "amy.zhang@company.com",
+              hireDate: "2019-03-15",
               children: []
             },
             {
@@ -189,6 +329,13 @@ export const orgData = {
               department: "Finance",
               tier: "manager",
               level: "senior",
+              phone: "(555) 123-4587",
+              teamsId: "xi.wang@company.com",
+              directorate: "Finance",
+              supervisor: "Terri Wilson",
+              location: "HQ - Floor 8",
+              email: "xi.wang@company.com",
+              hireDate: "2018-09-01",
               children: [
                 {
                   id: '4111',
@@ -197,6 +344,13 @@ export const orgData = {
                   department: "Finance",
                   tier: "staff",
                   level: "senior",
+                  phone: "(555) 123-4588",
+                  teamsId: "john.smith@company.com",
+                  directorate: "Finance",
+                  supervisor: "Xi Wang",
+                  location: "HQ - Floor 7",
+                  email: "john.smith@company.com",
+                  hireDate: "2019-07-15",
                   children: []
                 },
                 {
@@ -206,6 +360,13 @@ export const orgData = {
                   department: "Finance",
                   tier: "staff",
                   level: "junior",
+                  phone: "(555) 123-4589",
+                  teamsId: "emma.davis@company.com",
+                  directorate: "Finance",
+                  supervisor: "Xi Wang",
+                  location: "HQ - Floor 7",
+                  email: "emma.davis@company.com",
+                  hireDate: "2021-11-01",
                   children: []
                 }
               ]
