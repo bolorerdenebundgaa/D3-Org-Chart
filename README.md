@@ -2,7 +2,6 @@
 
 An interactive organization chart built with D3.js and React that features drag-and-drop functionality, zoom controls, and expandable/collapsible nodes. View the [live demo](https://bolor.me/D3OrgChart/index.html).
 
-![Organization Chart Screenshot](https://bolor.me/D3OrgChart/screenshot.png)
 
 ## Features
 
