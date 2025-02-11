@@ -31,8 +31,8 @@ If you want to customize or develop the project:
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
-cd interactive-organization-chart
+gh repo clone bolorerdenebundgaa/D3-Org-Chart
+cd D3-Org-Chart
 ```
 
 2. Install dependencies:
